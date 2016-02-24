@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="calcMethod">
+        <item name="UIS">University of Islamic Sciences</item>
+        <item name="ISNA">ISNA</item>
+        <item name="MWL">MWL</item>
+        <item name="Makkah">Makkah</item>
+        <item name="Jafari">Jafari</item>
+        <item name="Egypt">Egypt</item>
+        <item name="Tehran">Tehran</item>
+    </string-array>
+    <string-array name="calcMethodValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="juriMethod">
+        <item>Shafii(Standard)</item>
+        <item>Hanfi</item>
+    </string-array>
+    <string-array name="juriMethodValues">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="latitudeMethod">
+        <item>None</item>
+        <item>MidNight</item>
+        <item>OneSeventh</item>
+        <item>AngleBased</item>
+    </string-array>
+    <string-array name="latitudeMethodValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:title="24H Format"
+        android:checked="false"
+        android:key="TimeFormat"
+        android:summary="Use 24 Hour Format"/>
+
+<ListPreference
+    android:title="Calculation Method"
+    android:key="CalMethod"
+    android:summary="Calculation method for Salat time"
+    android:defaultValue="0"
+    android:entries="@array/calcMethod"
+    android:entryValues="@array/calcMethodValues"
+    />
+
+    <ListPreference
+        android:title="Juristic Method"
+        android:key="JuriMethod"
+        android:summary="Juristic method for Asr time"
+        android:defaultValue="0"
+        android:entries="@array/juriMethod"
+        android:entryValues="@array/juriMethodValues"
+        />
+
+    <ListPreference
+        android:title="Latitude Adjustment"
+        android:key="latitudeMethod"
+        android:summary="Methods for Higher Latitudes"
+        android:defaultValue="3"
+        android:entries="@array/latitudeMethod"
+        android:entryValues="@array/latitudeMethodValues"
+        />
+</PreferenceScreen>

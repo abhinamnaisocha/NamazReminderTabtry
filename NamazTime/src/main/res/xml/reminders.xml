@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceCategory android:title="Reminders">
+
+    <CheckBoxPreference
+        android:title="Fajr Reminder"
+        android:checked="false"
+        android:key="fajr"
+        android:summary="Remind me for Fajr prayer"/>
+
+    <CheckBoxPreference
+        android:title="Dhuhr Reminder"
+        android:checked="false"
+        android:key="zhr"
+        android:summary="Remind me for Dhuhr prayer"/>
+
+    <CheckBoxPreference
+        android:title="Asr Reminder"
+        android:checked="false"
+        android:key="asr"
+        android:summary="Remind me for Asr prayer"/>
+
+    <CheckBoxPreference
+        android:title="Maghrib Reminder"
+        android:checked="false"
+        android:key="maghrib"
+        android:summary="Remind me for Maghrib prayer"/>
+
+    <CheckBoxPreference
+        android:title="Isha Reminder"
+        android:checked="false"
+        android:key="isha"
+        android:summary="Remind me for Isha prayer"/>
+
+</PreferenceCategory>
+</PreferenceScreen>
