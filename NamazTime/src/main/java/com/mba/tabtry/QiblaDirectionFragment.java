@@ -2,13 +2,17 @@ package com.mba.tabtry;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +35,6 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     double arrowStarting;
     private SensorManager mSensorManager;
     TextView tvHeading;
-    GPSTracker gps;
     SharedPreferences sharedprefs;
     SharedPreferences.Editor editor;
 
@@ -50,9 +53,7 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        gps = new GPSTracker(getContext());
         sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
-        editor = sharedprefs.edit();
 
         getLocation();
         image = (ImageView) view.findViewById(R.id.imageViewCompass);
@@ -136,13 +137,10 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     }
 
     void getLocation() {
-        if (gps.canGetLocation()) {
+        if (sharedprefs.getString("latitude", "") != "" || sharedprefs.getString("latitude", "") != "0") {
 
-            double latitude = gps.getLatitude();
-            double longitude = gps.getLongitude();
-            editor.putString("latitude", "" + latitude);
-            editor.putString("longitude", "" + longitude);
-            editor.apply();
+            double latitude = Double.parseDouble(sharedprefs.getString("latitude", ""));
+            double longitude = Double.parseDouble(sharedprefs.getString("longitude", ""));
             Toast.makeText(getContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             // thhese four line to calculate angle from user to Mecca.
             double lonDelta = (longitude * (Math.PI / 180) - 0.695096573227);
@@ -159,12 +157,10 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
                             "\n lat: " + sharedprefs.getString("latitude", "") + "" +
                             " \nlog: " + sharedprefs.getString("longitude", ""));
         } else {
-
-            if (sharedprefs.getString("latitude", "").equals("") || sharedprefs.getString("latitude", "").equals(""))
-                gps.showSettingsAlert();
-            else
-                Toast.makeText(getContext(), "If your location has changed press get location button", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "If your location has changed press get location button", Toast.LENGTH_LONG).show();
 
         }
     }
+
+
 }

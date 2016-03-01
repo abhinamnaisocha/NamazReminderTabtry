@@ -25,7 +25,7 @@ import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
 
-    GPSTracker gps;
+
     double lat, lon;
     SharedPreferences.Editor editor;
     SharedPreferences sharedprefs;
@@ -49,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
             lat = Double.parseDouble(sharedprefs.getString("latitude", ""));
             lon = Double.parseDouble(sharedprefs.getString("longitude", ""));
         }
-        // gps = new GPSTracker(this);
-        // gettingLocation();
+
 
         Toast.makeText(MainActivity.this, "Lat at main:" + lat + " Lon:" + lon, Toast.LENGTH_SHORT).show();
         final TextView namazTv = (TextView) findViewById(com.mba.tabtry.R.id.namaztv);
@@ -187,24 +186,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     //gets the location of the user by using GPS tracker Class
-    private void gettingLocation() {
-
-        if (gps.canGetLocation()) {
-
-            lat = gps.getLatitude();
-            lon = gps.getLongitude();
-            Toast.makeText(MainActivity.this, "Lat:" + lat + " Lon:" + lon, Toast.LENGTH_SHORT).show();
-            editor.putString("latitude", "" + gps.getLatitude());
-            editor.putString("longitude", "" + gps.getLongitude());
-            editor.apply();
-
-        } else {
-            if (sharedprefs.getString("latitude", "").equals("") || sharedprefs.getString("longitude", "").equals("") || sharedprefs.getString("latitude", "0").equals("") || sharedprefs.getString("longitude", "0").equals(""))
-                gps.showSettingsAlert();
-            else
-                Toast.makeText(this, "If your location has changed press get location button", Toast.LENGTH_LONG).show();
-        }
-    }
 
     //Gets the requested namaz time 0 fajr,2 zhr,3 asr,5 maghrib,6 isha
     private String getReqTime(int i) {
