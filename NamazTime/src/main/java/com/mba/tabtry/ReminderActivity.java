@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,6 +39,12 @@ public class ReminderActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder_layout);
+        final Window win = getWindow();
+        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        Alarmwakelock.acquire(this);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.adzanmekkah);
         mediaPlayer.start();
@@ -49,8 +57,8 @@ public class ReminderActivity extends Activity {
 
 
         try {
-            lat = Double.parseDouble(sharedprefs.getString("latitude", "24"));
-            lon = Double.parseDouble(sharedprefs.getString("longitude", "67"));
+            lat = Double.parseDouble(sharedprefs.getString("latitude", ""));
+            lon = Double.parseDouble(sharedprefs.getString("longitude", ""));
         } catch (NullPointerException n) {
             n.printStackTrace();
         }
@@ -78,7 +86,6 @@ public class ReminderActivity extends Activity {
 
             case "isha":
                 gettingRequestedTime(6, bundle.getString("prayer"));
-                Log.d("ACTIVITY called for", bundle.getString("prayer"));
                 break;
         }
 
@@ -87,6 +94,7 @@ public class ReminderActivity extends Activity {
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Alarmwakelock.release();
                 finish();
             }
         });
@@ -100,37 +108,48 @@ public class ReminderActivity extends Activity {
             remaining = tokens.nextToken();
             tokens = new StringTokenizer(remaining, " ");
             mins = tokens.nextToken();
+            Toast.makeText(this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         } else if (reqNamazTime.contains("pm")) {
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
-            int hours = Integer.parseInt(hour) + 12;
-            hour = String.valueOf(hours);
+            if (Integer.parseInt(hour) < 12) {
+                int hours = Integer.parseInt(hour) + 12;
+                hour = String.valueOf(hours);
+            }
             remaining = tokens.nextToken();
             tokens = new StringTokenizer(remaining, " ");
             mins = tokens.nextToken();
+            Toast.makeText(this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         } else {
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
             mins = tokens.nextToken();
+            Toast.makeText(this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         }
 
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
+        if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
         Bundle bundle = new Bundle();
         bundle.putString("prayer", prayerName);
+        Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
         bundle.putString("hour", hour);
         bundle.putString("mins", mins);
+        bundle.putString("lat", String.valueOf(lat));
+        bundle.putString("lon", String.valueOf(lon));
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getBaseContext(), ReminderReciever.class);
         intent.putExtras(bundle);
         PendingIntent pendingIntent
                 = PendingIntent.getBroadcast(getBaseContext(),
-                0, intent, 0);
+                i, intent, 0);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
         am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        Log.d("ACTIVITY at", hour + ":" + mins + " " + prayerName + "on dated" + calendar.getTime());
+
 
     }
 

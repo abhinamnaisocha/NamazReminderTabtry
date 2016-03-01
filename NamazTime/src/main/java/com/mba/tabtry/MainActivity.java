@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (reqNamazTime.contains("pm")) {
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
-            if (Integer.parseInt(hour) > 12) {
+            if (Integer.parseInt(hour) < 12) {
                 int hours = Integer.parseInt(hour) + 12;
                 hour = String.valueOf(hours);
             }
@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
             mins = tokens.nextToken();
             Toast.makeText(MainActivity.this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         }
-
 
         Calendar calendar = Calendar.getInstance();
 
@@ -328,6 +327,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         } else if (id == R.id.action_reminders) {
             Intent i = new Intent("com.mba.tabtry.REMINDERPREFS");
+            startActivity(i);
+        } else if (id == R.id.action_location) {
+            Intent i = new Intent(MainActivity.this, LocationTracker.class);
             startActivity(i);
         } else if (id == R.id.action_exits) {
             finish();

@@ -9,4 +9,7 @@
     <string name="datetext">DD MM YYYY</string>
     <string name="datebtntext">Change Date</string>
     <string name="Okay">Okay</string>
+    <string name="lati">Latitude:</string>
+    <string name="longi">Longitude:</string>
+    <string name="okie">Refresh</string>
 </resources>

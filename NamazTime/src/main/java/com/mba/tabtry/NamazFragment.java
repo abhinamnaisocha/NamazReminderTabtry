@@ -39,11 +39,11 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 
-public class NamazFragment extends Fragment implements LocationListener {
+public class NamazFragment extends Fragment {
 
     String providers;
     View vie;
-    float lat = (float) 0.926295, lon = (float) 0.130499;
+    Double lat = 0.926295, lon = 0.130499;
     TextView datetv;
     Button datebtn;
     LocationManager locationManager;
@@ -81,6 +81,7 @@ public class NamazFragment extends Fragment implements LocationListener {
         vie = view;
         datetv = (TextView) view.findViewById(R.id.lattv);
         datebtn = (Button) view.findViewById(R.id.btndate);
+        sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
 
 
         calendar = Calendar.getInstance();
@@ -88,33 +89,6 @@ public class NamazFragment extends Fragment implements LocationListener {
         calendar.setTime(now);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         datetv.setText(sdf.format(calendar.getTime()));
-
-        /////////////////Getting Latitude and Longitude
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-        //Criteria for Location
-        Criteria c = new Criteria();
-        providers = locationManager.getBestProvider(c, false);
-        Location location = locationManager.getLastKnownLocation(providers);
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
-
-        if (location != null) {
-            lat = (float) location.getLatitude();
-            lon = (float) location.getLongitude();
-            editor.putString("latitude",String.valueOf(lat));
-            editor.putString("longitude",String.valueOf(lon));
-            editor.apply();
-            Toast.makeText(getContext(), "lat:" + lat + " lon:" + lon, Toast.LENGTH_SHORT).show();
-
-
-        } else {
-            Toast.makeText(getContext(), "Please turn on Location", Toast.LENGTH_LONG);
-        }
-
 
         getTime();
 
@@ -142,49 +116,30 @@ public class NamazFragment extends Fragment implements LocationListener {
                 dpd.show();
             }
         });
-
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
-        locationManager.requestLocationUpdates(providers, (1000 * 60 * 60), (float) (20 * 1000), this);
+        getTime();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.removeUpdates(this);
     }
 
 
     public void getTime() {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
-        sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
         boolean timeFormat = preferences.getBoolean("TimeFormat", false);
         String calcMethod = preferences.getString("CalMethod", "0");
         String juriMethod = preferences.getString("JuriMethod", "0");
         String latitudeMethod = preferences.getString("latitudeMethod", "3");
 
         double latitude = Double.valueOf(sharedprefs.getString("latitude", "0"));
-        double longitude = Double.valueOf(sharedprefs.getString("longitude","0"));
+        double longitude = Double.valueOf(sharedprefs.getString("longitude", "0"));
 
         Log.d("LatLONG at namazFrag", lat + " latitude " + lon + " Longitude");
         double timezone = (Calendar.getInstance().getTimeZone()
@@ -282,28 +237,6 @@ public class NamazFragment extends Fragment implements LocationListener {
         namazListview.setAdapter(adapter);
     }
 
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-        lat = (float) location.getLatitude();
-        lon = (float) location.getLongitude();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }
 
 class ListAddapter extends ArrayAdapter {

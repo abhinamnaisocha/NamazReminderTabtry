@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import android.widget.Toast;
 public class LocationTracker extends Activity implements LocationListener {
 
     String provider;
+    Button refreshBnt;
     LocationManager lm;
     double lat, lon;
     TextView late, longi;
@@ -45,8 +47,23 @@ public class LocationTracker extends Activity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tracker_activity);
 
+        refreshBnt = (Button) findViewById(R.id.Location);
         late = (TextView) findViewById(R.id.latitude);
         longi = (TextView) findViewById(R.id.longitude);
+        final ProgressDialog dialog = ProgressDialog.show(LocationTracker.this,
+                "Please Wait... ", "Getting Location... ", false, true);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        new CountDownTimer(5000, 5000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+
+                dialog.dismiss();
+            }
+        }.start();
 
         sharedprefs = getSharedPreferences("dirPref", 0);
         editor = sharedprefs.edit();
@@ -74,26 +91,27 @@ public class LocationTracker extends Activity implements LocationListener {
             handler.postDelayed(new Runnable() {
                 public void run() {
 
-                    late.setText(String.valueOf(location.getLatitude()));
-                    longi.setText(String.valueOf(location.getLongitude()));
-                    editor.putString("latitude", (String) late.getText());
-                    editor.putString("longitude", (String) longi.getText());
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
+                    late.setText("Latitude: " + String.valueOf(location.getLatitude()));
+                    longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
+                    editor.putString("latitude", "" + lat);
+                    editor.putString("longitude", "" + lon);
                     editor.apply();
-
                 }
             }, 5000);
-            finish();
+
         } else {
 
             if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !lm.isProviderEnabled(LocationManager.PASSIVE_PROVIDER) && !lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 showSettingsAlert();
             } else {
 
-                final ProgressDialog dialog = ProgressDialog.show(LocationTracker.this,
+                final ProgressDialog dial = ProgressDialog.show(LocationTracker.this,
                         "Please Wait... ", "Getting Location... ", false, true);
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-                new CountDownTimer(5000,5000) {
+                new CountDownTimer(5000, 5000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                     }
@@ -103,16 +121,26 @@ public class LocationTracker extends Activity implements LocationListener {
                         if (location == null) {
                             Toast.makeText(LocationTracker.this, "Unable to find Location Please check settings", Toast.LENGTH_LONG).show();
                         } else {
-                            late.setText(String.valueOf(location.getLatitude()));
-                            longi.setText(String.valueOf(location.getLongitude()));
-
+                            lat = location.getLatitude();
+                            lon = location.getLongitude();
+                            late.setText("Latitude: " + String.valueOf(location.getLatitude()));
+                            longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
                         }
-                        dialog.dismiss();
+                        dial.dismiss();
                     }
                 }.start();
 
             }
         }
+
+        refreshBnt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                Intent i = new Intent(LocationTracker.this, LocationTracker.class);
+                startActivity(i);
+            }
+        });
     }
 
     @Override
@@ -152,10 +180,11 @@ public class LocationTracker extends Activity implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
 
-        lat = (location.getLatitude());
-        lon = (location.getLongitude());
-        late.setText(String.valueOf(location.getLatitude()));
-        longi.setText(String.valueOf(location.getLongitude()));
+        late.setText("Latitude: " + String.valueOf(location.getLatitude()));
+        longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
+        editor.putString("latitude", String.valueOf(location.getLatitude()));
+        editor.putString("longitude", String.valueOf(location.getLongitude()));
+        editor.apply();
 
 
     }
