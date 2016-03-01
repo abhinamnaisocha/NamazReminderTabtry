@@ -48,6 +48,8 @@ public class NamazFragment extends Fragment implements LocationListener {
     Button datebtn;
     LocationManager locationManager;
     Calendar calendar = Calendar.getInstance();
+    private SharedPreferences sharedprefs;
+    private SharedPreferences.Editor editor;
 
     public NamazFragment() {
         // Required empty public constructor
@@ -76,7 +78,6 @@ public class NamazFragment extends Fragment implements LocationListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         vie = view;
         datetv = (TextView) view.findViewById(R.id.lattv);
         datebtn = (Button) view.findViewById(R.id.btndate);
@@ -104,6 +105,9 @@ public class NamazFragment extends Fragment implements LocationListener {
         if (location != null) {
             lat = (float) location.getLatitude();
             lon = (float) location.getLongitude();
+            editor.putString("latitude",String.valueOf(lat));
+            editor.putString("longitude",String.valueOf(lon));
+            editor.apply();
             Toast.makeText(getContext(), "lat:" + lat + " lon:" + lon, Toast.LENGTH_SHORT).show();
 
 
@@ -173,15 +177,16 @@ public class NamazFragment extends Fragment implements LocationListener {
     public void getTime() {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
-
+        sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
         boolean timeFormat = preferences.getBoolean("TimeFormat", false);
         String calcMethod = preferences.getString("CalMethod", "0");
         String juriMethod = preferences.getString("JuriMethod", "0");
         String latitudeMethod = preferences.getString("latitudeMethod", "3");
 
-        double latitude = lat;
-        double longitude = lon;
-        Log.d("Lat LONG at namazFragment", lat + " latitude " + lon + " Longitude");
+        double latitude = Double.valueOf(sharedprefs.getString("latitude", "0"));
+        double longitude = Double.valueOf(sharedprefs.getString("longitude","0"));
+
+        Log.d("LatLONG at namazFrag", lat + " latitude " + lon + " Longitude");
         double timezone = (Calendar.getInstance().getTimeZone()
                 .getOffset(Calendar.getInstance().getTimeInMillis()))
                 / (1000 * 60 * 60);

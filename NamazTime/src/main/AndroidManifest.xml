@@ -40,6 +40,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".LocationTracker" />
+
         <activity android:name=".ReminderActivity" />
 
         <receiver

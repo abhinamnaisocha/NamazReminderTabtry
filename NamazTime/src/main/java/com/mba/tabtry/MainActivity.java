@@ -40,13 +40,17 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         sharedprefs = getSharedPreferences("dirPref", 0);
         editor = sharedprefs.edit();
-        if (sharedprefs.getString("latitude", "") == "" || sharedprefs.getString("longitude", "") == "") {
-            editor.putString("latidude", "");
-            editor.putString("longitude", "");
-            editor.apply();
+        if ((sharedprefs.getString("latitude", "") == "" && sharedprefs.getString("longitude", "") == "") || (sharedprefs.getString("latitude", "0") == "" && sharedprefs.getString("longitude", "") == "0")) {
+            Intent i = new Intent(MainActivity.this, LocationTracker.class);
+            startActivity(i);
+
+        } else {
+            Toast.makeText(MainActivity.this, "LOOOOOOOOOOOL", Toast.LENGTH_SHORT).show();
+            lat = Double.parseDouble(sharedprefs.getString("latitude", ""));
+            lon = Double.parseDouble(sharedprefs.getString("longitude", ""));
         }
-        gps = new GPSTracker(this);
-        gettingLocation();
+        // gps = new GPSTracker(this);
+        // gettingLocation();
 
         Toast.makeText(MainActivity.this, "Lat at main:" + lat + " Lon:" + lon, Toast.LENGTH_SHORT).show();
         final TextView namazTv = (TextView) findViewById(com.mba.tabtry.R.id.namaztv);
@@ -367,7 +371,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        gettingLocation();
+        sharedprefs = getSharedPreferences("dirPref", 0);
+        editor = sharedprefs.edit();
+        if ((sharedprefs.getString("latitude", "") == "" && sharedprefs.getString("longitude", "") == "") || (sharedprefs.getString("latitude", "0") == "" && sharedprefs.getString("longitude", "") == "0")) {
+            Intent i = new Intent(MainActivity.this, LocationTracker.class);
+            startActivity(i);
+
+        } else {
+            Toast.makeText(MainActivity.this, "LOOOOOOOOOOOL", Toast.LENGTH_SHORT).show();
+            lat = Double.parseDouble(sharedprefs.getString("latitude", ""));
+            lon = Double.parseDouble(sharedprefs.getString("longitude", ""));
+        }
         gettingReminderPrefs();
         prayerReminders();
         cancelAlarm();
