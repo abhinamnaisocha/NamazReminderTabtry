@@ -146,7 +146,7 @@ public class ReminderActivity extends Activity {
         intent.putExtras(bundle);
         PendingIntent pendingIntent
                 = PendingIntent.getBroadcast(getBaseContext(),
-                i, intent, 0);
+                i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 

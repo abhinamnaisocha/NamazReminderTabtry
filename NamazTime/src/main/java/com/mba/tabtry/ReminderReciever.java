@@ -19,6 +19,7 @@ public class ReminderReciever extends BroadcastReceiver{
         bundle.getString("prayer");
         Intent scheduledIntent = new Intent(context,ReminderActivity.class);
         scheduledIntent.putExtras(bundle);
+        Log.d("RECIEVED intent","of "+bundle.getString("prayer"));
         scheduledIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(scheduledIntent);
     }

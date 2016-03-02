@@ -123,8 +123,12 @@ public class MainActivity extends AppCompatActivity {
     private void gettingRequestedTime(int i, String prayerName) {
         reqNamazTime = getReqTime(i);
         if (reqNamazTime.contains("am")) {
+
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
+            if (hour == "12") {
+                hour = "00";
+            }
             remaining = tokens.nextToken();
             tokens = new StringTokenizer(remaining, " ");
             mins = tokens.nextToken();
@@ -156,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Bundle bundle = new Bundle();
         bundle.putString("prayer", prayerName);
-        Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
         bundle.putString("hour", hour);
         bundle.putString("mins", mins);
         bundle.putString("lat", String.valueOf(lat));
@@ -166,10 +169,11 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtras(bundle);
         PendingIntent pendingIntent
                 = PendingIntent.getBroadcast(getBaseContext(),
-                i, intent, 0);
+                i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
+        Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
 
     }
 
@@ -346,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getBaseContext(), ReminderReciever.class);
         PendingIntent pendingIntent
                 = PendingIntent.getBroadcast(getBaseContext(),
-                reqCode, intent, 0);
+                reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         am.cancel(pendingIntent);
         Toast.makeText(MainActivity.this, "Canceled REQ CODE " + reqCode, Toast.LENGTH_SHORT).show();
     }

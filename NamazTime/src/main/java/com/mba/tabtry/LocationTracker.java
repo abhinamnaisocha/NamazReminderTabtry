@@ -41,6 +41,7 @@ public class LocationTracker extends Activity implements LocationListener {
     TextView late, longi;
     SharedPreferences sharedprefs;
     SharedPreferences.Editor editor;
+    Location location;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +69,15 @@ public class LocationTracker extends Activity implements LocationListener {
         sharedprefs = getSharedPreferences("dirPref", 0);
         editor = sharedprefs.edit();
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria c = new Criteria();
-        provider = lm.getBestProvider(c, false);
-        final Location location = lm.getLastKnownLocation(provider);
+
+        if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        } else if (lm.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+            location = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+        } else if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -103,34 +110,33 @@ public class LocationTracker extends Activity implements LocationListener {
 
         } else {
 
-            if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !lm.isProviderEnabled(LocationManager.PASSIVE_PROVIDER) && !lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                showSettingsAlert();
-            } else {
+            showSettingsAlert();
 
-                final ProgressDialog dial = ProgressDialog.show(LocationTracker.this,
-                        "Please Wait... ", "Getting Location... ", false, true);
-                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-                new CountDownTimer(5000, 5000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
+            final ProgressDialog dial = ProgressDialog.show(LocationTracker.this,
+                    "Please Wait... ", "Getting Location... ", false, true);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+            new CountDownTimer(5000, 5000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                }
+
+                @Override
+                public void onFinish() {
+                    if (location == null) {
+                        Toast.makeText(LocationTracker.this, "Unable to find Location Please check settings", Toast.LENGTH_LONG).show();
+                    } else {
+                        lat = location.getLatitude();
+                        lon = location.getLongitude();
+                        late.setText("Latitude: " + String.valueOf(location.getLatitude()));
+                        longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
                     }
+                    dial.dismiss();
+                }
+            }.start();
 
-                    @Override
-                    public void onFinish() {
-                        if (location == null) {
-                            Toast.makeText(LocationTracker.this, "Unable to find Location Please check settings", Toast.LENGTH_LONG).show();
-                        } else {
-                            lat = location.getLatitude();
-                            lon = location.getLongitude();
-                            late.setText("Latitude: " + String.valueOf(location.getLatitude()));
-                            longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
-                        }
-                        dial.dismiss();
-                    }
-                }.start();
 
-            }
         }
 
         refreshBnt.setOnClickListener(new View.OnClickListener() {
