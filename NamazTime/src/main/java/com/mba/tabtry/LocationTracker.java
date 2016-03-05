@@ -105,6 +105,7 @@ public class LocationTracker extends Activity implements LocationListener {
                     editor.putString("latitude", "" + lat);
                     editor.putString("longitude", "" + lon);
                     editor.apply();
+                    finish();
                 }
             }, 5000);
 
