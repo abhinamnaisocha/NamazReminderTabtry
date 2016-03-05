@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,12 +38,13 @@ public class ReminderActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder_layout);
+        Alarmwakelock.acquire(this);
+
         final Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-        Alarmwakelock.acquire(this);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.adzanmekkah);
         mediaPlayer.start();
@@ -95,6 +95,7 @@ public class ReminderActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Alarmwakelock.release();
+                mediaPlayer.stop();
                 finish();
             }
         });
@@ -131,25 +132,27 @@ public class ReminderActivity extends Activity {
 
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
-        if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-        }
+        calendar.set(Calendar.SECOND, 00);
+
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+
+
         Bundle bundle = new Bundle();
         bundle.putString("prayer", prayerName);
-        Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
         bundle.putString("hour", hour);
         bundle.putString("mins", mins);
         bundle.putString("lat", String.valueOf(lat));
         bundle.putString("lon", String.valueOf(lon));
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getBaseContext(), ReminderReciever.class);
+        Intent intent = new Intent(this, ReminderReciever.class);
         intent.putExtras(bundle);
         PendingIntent pendingIntent
-                = PendingIntent.getBroadcast(getBaseContext(),
-                i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                = PendingIntent.getBroadcast(this,
+                i, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
+        Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
+        Log.d("lool", "lol");
 
     }
 
@@ -173,7 +176,7 @@ public class ReminderActivity extends Activity {
 
 
         //Timeformat from Shared Preferences
-        if (timeFormat == false)
+        if (!timeFormat)
             prayers.setTimeFormat(prayers.Time12);
         else {
             prayers.setTimeFormat(prayers.Time24);
@@ -248,14 +251,12 @@ public class ReminderActivity extends Activity {
         ArrayList prayerTimes = prayers.getPrayerTimes(calendar, latitude,
                 longitude, timezone);
 
-        String reqTime = prayerTimes.get(i).toString();
-        return reqTime;
+        return prayerTimes.get(i).toString();
+
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        mediaPlayer.stop();
-        finish();
+    public void onBackPressed() {
+
     }
 }

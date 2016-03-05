@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NamazReminderTabtry-master.iml" filepath="$PROJECT_DIR$/NamazReminderTabtry-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NamazReminderTabtry.iml" filepath="$PROJECT_DIR$/NamazReminderTabtry.iml" />
       <module fileurl="file://$PROJECT_DIR$/NamazTime/NamazTime.iml" filepath="$PROJECT_DIR$/NamazTime/NamazTime.iml" />
     </modules>
   </component>

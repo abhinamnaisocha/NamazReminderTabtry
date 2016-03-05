@@ -179,7 +179,14 @@ public class LocationTracker extends Activity implements LocationListener {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        lm.requestLocationUpdates(provider, 500, 1, this);
+
+        if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 1, this);
+        } else if (lm.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+            lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 500, 1, this);
+        } else if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 1, this);
+        }
     }
 
 

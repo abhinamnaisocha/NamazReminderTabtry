@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
+        calendar.set(Calendar.SECOND, 00);
         if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtras(bundle);
         PendingIntent pendingIntent
                 = PendingIntent.getBroadcast(getBaseContext(),
-                i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                i, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
@@ -307,7 +308,6 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             Intent i = new Intent("com.mba.tabtry.PREFS");
             startActivity(i);
         } else if (id == R.id.action_reminders) {
@@ -347,10 +347,10 @@ public class MainActivity extends AppCompatActivity {
     private void cancelingAlarm(int reqCode) {
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getBaseContext(), ReminderReciever.class);
+        Intent intent = new Intent(this, ReminderReciever.class);
         PendingIntent pendingIntent
-                = PendingIntent.getBroadcast(getBaseContext(),
-                reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                = PendingIntent.getBroadcast(this,
+                reqCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(pendingIntent);
         Toast.makeText(MainActivity.this, "Canceled REQ CODE " + reqCode, Toast.LENGTH_SHORT).show();
     }
