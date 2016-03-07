@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Toast.makeText(MainActivity.this, "Lat at main:" + lat + " Lon:" + lon, Toast.LENGTH_SHORT).show();
-        final TextView namazTv = (TextView) findViewById(com.mba.tabtry.R.id.namaztv);
+
 
         TabLayout tabLayout = (TabLayout) findViewById(com.mba.tabtry.R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Namaz"));

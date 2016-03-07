@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mba.myapplication.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="Settings"
-        app:showAsAction="never" />
-
+        android:id="@+id/action_location"
+        android:orderInCategory="200"
+        android:title="Location"
+        android:icon="@android:drawable/ic_menu_mylocation"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_reminders"
         android:orderInCategory="100"
         android:title="Reminders"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_location"
-        android:orderInCategory="200"
-        android:title="Location"
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="Settings"
         app:showAsAction="never" />
 
     <item

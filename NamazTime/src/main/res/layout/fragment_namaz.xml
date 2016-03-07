@@ -5,47 +5,64 @@
     tools:context="com.mba.tabtry.NamazFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/namaztv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/NamazTitle"
-        android:textSize="20sp" />
 
     <TextView
+        android:layout_marginTop="10dp"
         android:id="@+id/lattv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/namaztv"
-        android:layout_marginEnd="142dp"
-        android:layout_marginRight="142dp"
-        android:gravity="center_horizontal"
-        android:text="@string/datetext"
-        android:textSize="20sp" />
-
-    <Button
-        android:id="@+id/btndate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/lattv"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignRight="@+id/lattv"
-        android:layout_below="@+id/namaztv"
-        android:layout_marginRight="5dp"
-        android:text="@string/datebtntext" />
+        android:gravity="center_horizontal"
+        android:text="@string/datetext"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#9c27b0"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+
 
     <ListView
+        android:listSelector="@android:color/transparent"
         android:id="@+id/namazlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/lattv">
+        android:layout_below="@+id/lattv"
+
+        android:headerDividersEnabled="false"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:drawSelectorOnTop="false">
 
     </ListView>
+
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/datePikerLeft"
+        android:background="@drawable/date_piker"
+        android:layout_above="@+id/namazlist"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_toStartOf="@+id/lattv"
+        android:layout_alignTop="@+id/lattv" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/datePikerRight"
+        android:background="@drawable/calander_custom"
+        android:layout_above="@+id/namazlist"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toEndOf="@+id/lattv"
+        android:layout_alignTop="@+id/lattv" />
 
 </RelativeLayout>

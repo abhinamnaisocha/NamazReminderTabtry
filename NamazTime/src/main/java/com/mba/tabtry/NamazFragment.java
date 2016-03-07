@@ -7,6 +7,7 @@ import android.content.Context;
 
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,7 +47,7 @@ public class NamazFragment extends Fragment {
     View vie;
     Double lat = 0.926295, lon = 0.130499;
     TextView datetv;
-    Button datebtn;
+    ImageButton datebtn;
     LocationManager locationManager;
     Calendar calendar = Calendar.getInstance();
     private SharedPreferences sharedprefs;
@@ -80,7 +82,7 @@ public class NamazFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         vie = view;
         datetv = (TextView) view.findViewById(R.id.lattv);
-        datebtn = (Button) view.findViewById(R.id.btndate);
+        datebtn = (ImageButton) view.findViewById(R.id.datePikerLeft);
         sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
 
 
@@ -89,6 +91,7 @@ public class NamazFragment extends Fragment {
         calendar.setTime(now);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         datetv.setText(sdf.format(calendar.getTime()));
+        datetv.setPaintFlags(datetv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);//muff added (hatana nae o isko)
 
         getTime();
 
@@ -228,7 +231,7 @@ public class NamazFragment extends Fragment {
         ArrayList<String> pTimeAndName = new ArrayList<String>();
 
         for (int i = 0; i < prayerTimes.size(); i++) {
-            pTimeAndName.add("\n" + prayerNames.get(i).toString() + " - "
+            pTimeAndName.add("\n" + prayerNames.get(i).toString() + ":-  "
                     + prayerTimes.get(i).toString());
         }
 
