@@ -1,35 +1,24 @@
 package com.mba.tabtry;
 
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
-
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import net.alhazmy13.hijridatepicker.HijriCalendarDialog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,11 +32,10 @@ import java.util.List;
 
 public class NamazFragment extends Fragment {
 
-    String providers;
     View vie;
     Double lat = 0.926295, lon = 0.130499;
     TextView datetv;
-    ImageButton datebtn;
+    ImageButton datebtn, calbtn;
     LocationManager locationManager;
     Calendar calendar = Calendar.getInstance();
     private SharedPreferences sharedprefs;
@@ -82,6 +70,7 @@ public class NamazFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         vie = view;
         datetv = (TextView) view.findViewById(R.id.lattv);
+        calbtn = (ImageButton) view.findViewById(R.id.datePikerRight);
         datebtn = (ImageButton) view.findViewById(R.id.datePikerLeft);
         sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
 
@@ -117,6 +106,14 @@ public class NamazFragment extends Fragment {
                             }
                         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
                 dpd.show();
+            }
+        });
+
+
+        calbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new HijriCalendarDialog.Builder(getContext()).show();
             }
         });
     }

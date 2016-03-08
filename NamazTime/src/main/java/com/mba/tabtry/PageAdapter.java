@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
  */
 public class PageAdapter extends FragmentStatePagerAdapter {
 
-    int numTabs=3;
+    int numTabs = 2;
 
     public PageAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
@@ -23,11 +23,9 @@ public class PageAdapter extends FragmentStatePagerAdapter {
                 NamazFragment tab1 = new NamazFragment();
                 return tab1;
             case 1:
-                CalendarFragment tab2 = new CalendarFragment();
+                QiblaDirectionFragment tab2 = new QiblaDirectionFragment();
                 return tab2;
-            case 2:
-                QiblaDirectionFragment tab3 = new QiblaDirectionFragment();
-                return tab3;
+
             default:
                 return null;
         }

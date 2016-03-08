@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(com.mba.tabtry.R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Namaz"));
-        tabLayout.addTab(tabLayout.newTab().setText("Calendar"));
         tabLayout.addTab(tabLayout.newTab().setText("Qibla"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
@@ -70,9 +69,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                if (tab.getPosition() == 1) {
-                    new HijriCalendarDialog.Builder(MainActivity.this).show();
-                }
+
             }
 
             @Override
@@ -81,9 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 1) {
-                    new HijriCalendarDialog.Builder(MainActivity.this).show();
-                }
+
             }
         });
     }

@@ -111,7 +111,8 @@ public class LocationTracker extends Activity implements LocationListener {
 
         } else {
 
-            showSettingsAlert();
+            if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !lm.isProviderEnabled(LocationManager.PASSIVE_PROVIDER) && !lm.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                showSettingsAlert();
 
 
             final ProgressDialog dial = ProgressDialog.show(LocationTracker.this,
