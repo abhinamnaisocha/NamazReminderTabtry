@@ -9,7 +9,7 @@ import java.util.TimeZone;
 /**
  * Created by Muhammad Bilal on 12/02/2016.
  */
-public class PrayerCalculator  {
+public class PrayerCalculator {
 
     // ---------------------- Global Variables --------------------
     private int calcMethod; // caculation method
@@ -123,35 +123,35 @@ public class PrayerCalculator  {
         methodParams = new HashMap<Integer, double[]>();
 
 // Jafari
-        double[] Jvalues = { 16, 0, 4, 0, 14 };
+        double[] Jvalues = {16, 0, 4, 0, 14};
         methodParams.put(Integer.valueOf(this.getJafari()), Jvalues);
 
 // Karachi
-        double[] Kvalues = { 18, 1, 0, 0, 18 };
+        double[] Kvalues = {18, 1, 0, 0, 18};
         methodParams.put(Integer.valueOf(this.getKarachi()), Kvalues);
 
 // ISNA
-        double[] Ivalues = { 15, 1, 0, 0, 15 };
+        double[] Ivalues = {15, 1, 0, 0, 15};
         methodParams.put(Integer.valueOf(this.getISNA()), Ivalues);
 
 // MWL
-        double[] MWvalues = { 18, 1, 0, 0, 17 };
+        double[] MWvalues = {18, 1, 0, 0, 17};
         methodParams.put(Integer.valueOf(this.getMWL()), MWvalues);
 
 // Makkah
-        double[] MKvalues = { 18.5, 1, 0, 1, 90 };
+        double[] MKvalues = {18.5, 1, 0, 1, 90};
         methodParams.put(Integer.valueOf(this.getMakkah()), MKvalues);
 
 // Egypt
-        double[] Evalues = { 19.5, 1, 0, 0, 17.5 };
+        double[] Evalues = {19.5, 1, 0, 0, 17.5};
         methodParams.put(Integer.valueOf(this.getEgypt()), Evalues);
 
 // Tehran
-        double[] Tvalues = { 17.7, 0, 4.5, 0, 14 };
+        double[] Tvalues = {17.7, 0, 4.5, 0, 14};
         methodParams.put(Integer.valueOf(this.getTehran()), Tvalues);
 
 // Custom
-        double[] Cvalues = { 18, 1, 0, 0, 17 };
+        double[] Cvalues = {18, 1, 0, 0, 17};
         methodParams.put(Integer.valueOf(this.getCustom()), Cvalues);
 
     }
@@ -391,34 +391,34 @@ public class PrayerCalculator  {
 
     // set the angle for calculating Fajr
     public void setFajrAngle(double angle) {
-        double[] params = { angle, -1, -1, -1, -1 };
+        double[] params = {angle, -1, -1, -1, -1};
         setCustomParams(params);
     }
 
     // set the angle for calculating Maghrib
     public void setMaghribAngle(double angle) {
-        double[] params = { -1, 0, angle, -1, -1 };
+        double[] params = {-1, 0, angle, -1, -1};
         setCustomParams(params);
 
     }
 
     // set the angle for calculating Isha
     public void setIshaAngle(double angle) {
-        double[] params = { -1, -1, -1, 0, angle };
+        double[] params = {-1, -1, -1, 0, angle};
         setCustomParams(params);
 
     }
 
     // set the minutes after Sunset for calculating Maghrib
     public void setMaghribMinutes(double minutes) {
-        double[] params = { -1, 1, minutes, -1, -1 };
+        double[] params = {-1, 1, minutes, -1, -1};
         setCustomParams(params);
 
     }
 
     // set the minutes after Maghrib for calculating Isha
     public void setIshaMinutes(double minutes) {
-        double[] params = { -1, -1, -1, 1, minutes };
+        double[] params = {-1, -1, -1, 1, minutes};
         setCustomParams(params);
 
     }
@@ -520,7 +520,7 @@ public class PrayerCalculator  {
         double Isha = this.computeTime(
                 methodParams.get(this.getCalcMethod())[4], t[6]);
 
-        double[] CTimes = { Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha };
+        double[] CTimes = {Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha};
 
         return CTimes;
 
@@ -528,7 +528,7 @@ public class PrayerCalculator  {
 
     // compute prayer times at given julian date
     private ArrayList<String> computeDayTimes() {
-        double[] times = { 5, 6, 12, 13, 18, 18, 18 }; // default times
+        double[] times = {5, 6, 12, 13, 18, 18, 18}; // default times
 
         for (int i = 1; i <= this.getNumIterations(); i++) {
             times = computeTimes(times);
@@ -664,8 +664,6 @@ public class PrayerCalculator  {
 
         return times;
     }
-
-
 
 
     public int getCalcMethod() {

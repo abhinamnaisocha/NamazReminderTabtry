@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -17,14 +19,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-/**
- * Created by Muhammad Bilal on 18/02/2016.
- */
+
 public class ReminderActivity extends Activity {
 
     TextView namazName, date;
@@ -32,7 +33,7 @@ public class ReminderActivity extends Activity {
     Double lat, lon;
     Button okay;
     MediaPlayer mediaPlayer;
-    SharedPreferences sharedprefs;
+    SharedPreferences sharedprefs, preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +42,14 @@ public class ReminderActivity extends Activity {
         Alarmwakelock.acquire(this);
 
         final Window win = getWindow();
-        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-        win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        win.setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mediaPlayer = MediaPlayer.create(this, R.raw.adzanmekkah);
         mediaPlayer.start();
 
@@ -62,32 +66,53 @@ public class ReminderActivity extends Activity {
         } catch (NullPointerException n) {
             n.printStackTrace();
         }
-        Date d = new Date();
+
+        String currentDateTime = DateFormat.getDateTimeInstance().format(new Date());
         date = (TextView) findViewById(R.id.datetv);
-        date.setText(String.valueOf(d.getTime()));
+        date.setText(String.valueOf(currentDateTime));
 
 
         switch (bundle.getString("prayer")) {
-            case "fajr":
+            case "Fajr":
                 gettingRequestedTime(0, bundle.getString("prayer"));
                 break;
 
-            case "zhr":
+            case "Dhuhr":
                 gettingRequestedTime(2, bundle.getString("prayer"));
                 break;
 
-            case "asr":
+            case "Asr":
                 gettingRequestedTime(3, bundle.getString("prayer"));
                 break;
 
-            case "maghrib":
+            case "Maghrib":
                 gettingRequestedTime(5, bundle.getString("prayer"));
                 break;
 
-            case "isha":
+            case "Isha":
                 gettingRequestedTime(6, bundle.getString("prayer"));
                 break;
         }
+
+        new CountDownTimer(207000, 207000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                Toast.makeText(ReminderActivity.this, "released", Toast.LENGTH_SHORT).show();
+                win.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                win.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+                win.clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                }
+                Alarmwakelock.release();
+            }
+        }.start();
 
 
         okay = (Button) findViewById(R.id.okaybtn);
@@ -132,9 +157,26 @@ public class ReminderActivity extends Activity {
 
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
-        calendar.set(Calendar.SECOND, 00);
+        calendar.set(Calendar.SECOND, 0);
 
         calendar.add(Calendar.DAY_OF_YEAR, 1);
+        switch (prayerName) {
+            case "Fajr":
+                calendar.add(Calendar.MINUTE, Integer.parseInt(preferences.getString("fajrTime", "0")));
+                break;
+            case "Dhuhr":
+                calendar.add(Calendar.MINUTE, Integer.parseInt(preferences.getString("zhrTime", "0")));
+                break;
+            case "Asr":
+                calendar.add(Calendar.MINUTE, Integer.parseInt(preferences.getString("asrTime", "0")));
+                break;
+            case "Maghrib":
+                calendar.add(Calendar.MINUTE, Integer.parseInt(preferences.getString("maghribTime", "0")));
+                break;
+            case "Isha":
+                calendar.add(Calendar.MINUTE, Integer.parseInt(preferences.getString("ishaTime", "0")));
+                break;
+        }
 
 
         Bundle bundle = new Bundle();
@@ -150,9 +192,12 @@ public class ReminderActivity extends Activity {
                 = PendingIntent.getBroadcast(this,
                 i, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else
+            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
         Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
-        Log.d("lool", "lol");
 
     }
 

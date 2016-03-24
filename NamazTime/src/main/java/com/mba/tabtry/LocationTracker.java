@@ -37,7 +37,7 @@ public class LocationTracker extends Activity implements LocationListener {
     String provider;
     Button refreshBnt;
     LocationManager lm;
-    double lat, lon;
+    double lat, lon, alt;
     TextView late, longi;
     SharedPreferences sharedprefs;
     SharedPreferences.Editor editor;
@@ -100,10 +100,12 @@ public class LocationTracker extends Activity implements LocationListener {
 
                     lat = location.getLatitude();
                     lon = location.getLongitude();
+                    alt = location.getAltitude();
                     late.setText("Latitude: " + String.valueOf(location.getLatitude()));
                     longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
                     editor.putString("latitude", "" + lat);
                     editor.putString("longitude", "" + lon);
+                    editor.putString("altitude", "" + alt);
                     editor.apply();
                     finish();
                 }
@@ -131,6 +133,7 @@ public class LocationTracker extends Activity implements LocationListener {
                     } else {
                         lat = location.getLatitude();
                         lon = location.getLongitude();
+                        alt = location.getAltitude();
                         late.setText("Latitude: " + String.valueOf(location.getLatitude()));
                         longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
                     }
@@ -199,6 +202,7 @@ public class LocationTracker extends Activity implements LocationListener {
         longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
         editor.putString("latitude", String.valueOf(location.getLatitude()));
         editor.putString("longitude", String.valueOf(location.getLongitude()));
+        editor.putString("altitude", String.valueOf(location.getAltitude()));
         editor.apply();
 
 

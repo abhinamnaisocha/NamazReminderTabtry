@@ -1,36 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-<PreferenceCategory android:title="Reminders">
 
-    <CheckBoxPreference
-        android:title="Fajr Reminder"
-        android:checked="false"
-        android:key="fajr"
-        android:summary="Remind me for Fajr prayer"/>
+    <PreferenceCategory android:title="Fajr">
+        <CheckBoxPreference
+            android:checked="false"
+            android:key="fajr"
+            android:summary="Remind me for Fajr prayer"
+            android:title="Fajr Reminder" />
+        <EditTextPreference
+            android:hint="Remind after N minutes of Fajr "
+            android:inputType="number"
+            android:key="fajrTime"
+            android:summary="Remind me after N minutes of Fajr" />
+    </PreferenceCategory>
 
-    <CheckBoxPreference
-        android:title="Dhuhr Reminder"
-        android:checked="false"
-        android:key="zhr"
-        android:summary="Remind me for Dhuhr prayer"/>
+    <PreferenceCategory android:title="Dhuhr">
+        <CheckBoxPreference
+            android:checked="false"
+            android:key="zhr"
+            android:summary="Remind me for Dhuhr prayer"
+            android:title="Dhuhr Reminder" />
+        <EditTextPreference
+            android:hint="Remind after N minutes of Dhuhr "
+            android:inputType="number"
+            android:key="zhrTime"
+            android:summary="Remind me after N minutes of Dhuhr" />
+    </PreferenceCategory>
 
-    <CheckBoxPreference
-        android:title="Asr Reminder"
-        android:checked="false"
-        android:key="asr"
-        android:summary="Remind me for Asr prayer"/>
+    <PreferenceCategory android:title="Asr">
+        <CheckBoxPreference
+            android:checked="false"
+            android:key="asr"
+            android:summary="Remind me for Asr prayer"
+            android:title="Asr Reminder" />
+        <EditTextPreference
+            android:hint="Remind after N minutes of Asr "
+            android:inputType="number"
+            android:key="asrTime"
+            android:summary="Remind me after N minutes of Asr" />
+    </PreferenceCategory>
 
-    <CheckBoxPreference
-        android:title="Maghrib Reminder"
-        android:checked="false"
-        android:key="maghrib"
-        android:summary="Remind me for Maghrib prayer"/>
+    <PreferenceCategory android:title="Maghrib">
+        <CheckBoxPreference
+            android:checked="false"
+            android:key="maghrib"
+            android:summary="Remind me for Maghrib prayer"
+            android:title="Maghrib Reminder" />
+        <EditTextPreference
+            android:hint="Remind after N minutes of Maghrib "
+            android:inputType="number"
+            android:key="maghribTime"
+            android:summary="Remind me after N minutes of Maghrib" />
+    </PreferenceCategory>
 
-    <CheckBoxPreference
-        android:title="Isha Reminder"
-        android:checked="false"
-        android:key="isha"
-        android:summary="Remind me for Isha prayer"/>
+    <PreferenceCategory android:title="Isha">
+        <CheckBoxPreference
+            android:checked="false"
+            android:key="isha"
+            android:summary="Remind me for Isha prayer"
+            android:title="Isha Reminder" />
+        <EditTextPreference
+            android:hint="Remind after N minutes of Isha "
+            android:inputType="number"
+            android:key="ishaTime"
+            android:summary="Remind me after N minutes of Isha" />
+    </PreferenceCategory>
 
-</PreferenceCategory>
 </PreferenceScreen>

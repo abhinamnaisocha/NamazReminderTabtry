@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 public class QiblaDirectionFragment extends Fragment implements SensorEventListener {
 
 
+    Location currentLocation, MeccaLocation;
     private ImageView image, arrowIv;
     private float currentDegree = 0f;
     double arrowStarting;
@@ -37,6 +40,7 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     TextView tvHeading;
     SharedPreferences sharedprefs;
     SharedPreferences.Editor editor;
+    double longitude, latitude, altitude;
 
     public QiblaDirectionFragment() {
         // Required empty public constructor
@@ -56,6 +60,14 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
         sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
 
         getLocation();
+        currentLocation.setLatitude(latitude);
+        currentLocation.setLongitude(longitude);
+        currentLocation.setAltitude(altitude);
+
+        MeccaLocation.setLatitude(21.427378);
+        MeccaLocation.setLongitude(39.814838);
+        MeccaLocation.setAltitude(302.00);
+
         image = (ImageView) view.findViewById(R.id.imageViewCompass);
         arrowIv = (ImageView) view.findViewById(R.id.arrow_IV);
         // TextView that will tell the user what degree is he heading
@@ -74,18 +86,33 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     @Override
     public void onSensorChanged(SensorEvent event) {
         float degree = Math.round(event.values[0]);
+        GeomagneticField geoField = new GeomagneticField(Double
+                .valueOf(latitude).floatValue(), Double
+                .valueOf(longitude).floatValue(),
+                Double.valueOf(altitude).floatValue(),
+                System.currentTimeMillis());
 
 
+        degree -= geoField.getDeclination();
         tvHeading.setText(Float.toString(degree));
 
 
+        float bearTo = currentLocation.bearingTo(MeccaLocation);
+
+        if (bearTo < 0) {
+            bearTo = bearTo + 360;
+        }
+        float direction = bearTo - degree;
+        if (direction < 0) {
+            direction = direction + 360;
+        }
         // create a rotation animation (reverse turn degree degrees)
 
         RotateAnimation ra = new RotateAnimation(
 
                 currentDegree,
 
-                -degree,
+                direction,
 
                 Animation.RELATIVE_TO_SELF, 0.5f,
 
@@ -96,7 +123,7 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
 
                 (float) arrowStarting,
 
-                -degree,
+                direction,
 
                 Animation.RELATIVE_TO_SELF, 0.5f,
 
@@ -112,8 +139,8 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
         image.startAnimation(ra);
         arrowIv.startAnimation(raArrow);
 
-        currentDegree = -degree;
-        arrowStarting = -degree;
+        currentDegree = direction;
+        arrowStarting = direction;
     }
 
     @Override
@@ -139,8 +166,9 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     void getLocation() {
         if (sharedprefs.getString("latitude", "") != "" || sharedprefs.getString("latitude", "") != "0") {
 
-            double latitude = Double.parseDouble(sharedprefs.getString("latitude", ""));
-            double longitude = Double.parseDouble(sharedprefs.getString("longitude", ""));
+            latitude = Double.parseDouble(sharedprefs.getString("latitude", "0"));
+            longitude = Double.parseDouble(sharedprefs.getString("longitude", "0"));
+            longitude = Double.parseDouble(sharedprefs.getString("altitude", "0"));
             Toast.makeText(getContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             // thhese four line to calculate angle from user to Mecca.
             double lonDelta = (longitude * (Math.PI / 180) - 0.695096573227);
@@ -161,6 +189,4 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
 
         }
     }
-
-
 }

@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -14,10 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import net.alhazmy13.hijridatepicker.HijriCalendarDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,10 +24,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     double lat, lon;
-    SharedPreferences.Editor editor;
     SharedPreferences sharedprefs;
     Boolean fajr, zhr, asr, maghrib, isha;
     String reqNamazTime, hour, remaining, mins;
+    int fajrMin, zhrMin, asrMin, maghribMin, ishaMin;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,19 +37,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(com.mba.tabtry.R.id.toolbar);
         setSupportActionBar(toolbar);
         sharedprefs = getSharedPreferences("dirPref", 0);
-        editor = sharedprefs.edit();
-        if ((sharedprefs.getString("latitude", "") == "" && sharedprefs.getString("longitude", "") == "") || (sharedprefs.getString("latitude", "0") == "" && sharedprefs.getString("longitude", "") == "0")) {
+        if ((sharedprefs.getString("latitude", "").equals("") && sharedprefs.getString("longitude", "").equals("")) || (sharedprefs.getString("latitude", "0").equals("0") && sharedprefs.getString("longitude", "").equals("0"))) {
             Intent i = new Intent(MainActivity.this, LocationTracker.class);
             startActivity(i);
 
         } else {
-            Toast.makeText(MainActivity.this, "LOOOOOOOOOOOL", Toast.LENGTH_SHORT).show();
             lat = Double.parseDouble(sharedprefs.getString("latitude", ""));
             lon = Double.parseDouble(sharedprefs.getString("longitude", ""));
         }
-
-
-        Toast.makeText(MainActivity.this, "Lat at main:" + lat + " Lon:" + lon, Toast.LENGTH_SHORT).show();
 
 
         TabLayout tabLayout = (TabLayout) findViewById(com.mba.tabtry.R.id.tab_layout);
@@ -86,29 +79,29 @@ public class MainActivity extends AppCompatActivity {
     private void prayerReminders() {
         String prayerName;
         if (fajr) {
-            prayerName = "fajr";
+            prayerName = "Fajr";
             gettingRequestedTime(0, prayerName);
         }
         if (zhr) {
-            prayerName = "zhr";
+            prayerName = "Dhuhr";
             gettingRequestedTime(2, prayerName);
 
         }
 
         if (asr) {
-            prayerName = "asr";
+            prayerName = "Asr";
             gettingRequestedTime(3, prayerName);
 
         }
 
         if (maghrib) {
-            prayerName = "maghrib";
+            prayerName = "Maghrib";
             gettingRequestedTime(5, prayerName);
 
         }
 
         if (isha) {
-            prayerName = "isha";
+            prayerName = "Isha";
             gettingRequestedTime(6, prayerName);
 
         }
@@ -121,13 +114,12 @@ public class MainActivity extends AppCompatActivity {
 
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
-            if (hour == "12") {
+            if (hour.equals("12")) {
                 hour = "00";
             }
             remaining = tokens.nextToken();
             tokens = new StringTokenizer(remaining, " ");
             mins = tokens.nextToken();
-            Toast.makeText(MainActivity.this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         } else if (reqNamazTime.contains("pm")) {
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
@@ -138,19 +130,35 @@ public class MainActivity extends AppCompatActivity {
             remaining = tokens.nextToken();
             tokens = new StringTokenizer(remaining, " ");
             mins = tokens.nextToken();
-            Toast.makeText(MainActivity.this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         } else {
             StringTokenizer tokens = new StringTokenizer(reqNamazTime, ":");
             hour = tokens.nextToken();
             mins = tokens.nextToken();
-            Toast.makeText(MainActivity.this, hour + ":" + mins, Toast.LENGTH_SHORT).show();
         }
 
         Calendar calendar = Calendar.getInstance();
 
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
-        calendar.set(Calendar.SECOND, 00);
+        calendar.set(Calendar.SECOND, 0);
+
+        switch (prayerName) {
+            case "Fajr":
+                calendar.add(Calendar.MINUTE, fajrMin);
+                break;
+            case "Dhuhr":
+                calendar.add(Calendar.MINUTE, zhrMin);
+                break;
+            case "Asr":
+                calendar.add(Calendar.MINUTE, asrMin);
+                break;
+            case "Maghrib":
+                calendar.add(Calendar.MINUTE, maghribMin);
+                break;
+            case "Isha":
+                calendar.add(Calendar.MINUTE, ishaMin);
+                break;
+        }
         if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
@@ -167,7 +175,11 @@ public class MainActivity extends AppCompatActivity {
                 = PendingIntent.getBroadcast(getBaseContext(),
                 i, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else
+            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
 
         Log.d("Bundle has name", prayerName + "  " + calendar.getTime());
 
@@ -176,16 +188,53 @@ public class MainActivity extends AppCompatActivity {
     //Gets the values which namaz checkbox is checked
     private void gettingReminderPrefs() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        editor = preferences.edit();
         fajr = preferences.getBoolean("fajr", false);
-        zhr = preferences.getBoolean("zhr", false);
-        asr = preferences.getBoolean("asr", false);
-        maghrib = preferences.getBoolean("maghrib", false);
-        isha = preferences.getBoolean("isha", false);
+        try {
+            fajrMin = Integer.parseInt(preferences.getString("fajrTime", "00"));
+        } catch (NumberFormatException e) {
+            fajrMin = 0;
+            editor.putString("fajrTime", "0");
 
+        }
+        zhr = preferences.getBoolean("zhr", false);
+        try {
+            zhrMin = Integer.parseInt(preferences.getString("zhrTime", "00"));
+        } catch (NumberFormatException e) {
+            zhrMin = 0;
+            editor.putString("zhrTime", "0");
+            editor.apply();
+
+        }
+        asr = preferences.getBoolean("asr", false);
+        try {
+            asrMin = Integer.parseInt(preferences.getString("asrTime", "00"));
+        } catch (NumberFormatException e) {
+            asrMin = 0;
+            editor.putString("asrTime", "0");
+            editor.apply();
+
+        }
+        maghrib = preferences.getBoolean("maghrib", false);
+        try {
+            maghribMin = Integer.parseInt(preferences.getString("maghribTime", "00"));
+        } catch (NumberFormatException e) {
+            maghribMin = 0;
+            editor.putString("maghribTime", "0");
+            editor.apply();
+
+        }
+        isha = preferences.getBoolean("isha", false);
+        try {
+            ishaMin = Integer.parseInt(preferences.getString("ishaTime", "00"));
+        } catch (NumberFormatException e) {
+            ishaMin = 0;
+            editor.putString("ishaTime", "0");
+            editor.apply();
+
+        }
     }
 
-
-    //gets the location of the user by using GPS tracker Class
 
     //Gets the requested namaz time 0 fajr,2 zhr,3 asr,5 maghrib,6 isha
     private String getReqTime(int i) {
@@ -199,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
 
         double latitude = lat;
         double longitude = lon;
-        Toast.makeText(MainActivity.this, "latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_LONG).show();
         Calendar calendar = Calendar.getInstance();
         double timezone = (Calendar.getInstance().getTimeZone()
                 .getOffset(Calendar.getInstance().getTimeInMillis()))
@@ -207,8 +255,8 @@ public class MainActivity extends AppCompatActivity {
         PrayerCalculator prayers = new PrayerCalculator();
 
 
-        //Timeformat from Shared Preferences
-        if (timeFormat == false)
+        //Time format from Shared Preferences
+        if (!timeFormat)
             prayers.setTimeFormat(prayers.Time12);
         else {
             prayers.setTimeFormat(prayers.Time24);
@@ -283,8 +331,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayList prayerTimes = prayers.getPrayerTimes(calendar, latitude,
                 longitude, timezone);
 
-        String reqTime = prayerTimes.get(i).toString();
-        return reqTime;
+        return prayerTimes.get(i).toString();
+
     }
 
     @Override
@@ -347,20 +395,17 @@ public class MainActivity extends AppCompatActivity {
                 = PendingIntent.getBroadcast(this,
                 reqCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(pendingIntent);
-        Toast.makeText(MainActivity.this, "Canceled REQ CODE " + reqCode, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         sharedprefs = getSharedPreferences("dirPref", 0);
-        editor = sharedprefs.edit();
-        if ((sharedprefs.getString("latitude", "") == "" && sharedprefs.getString("longitude", "") == "") || (sharedprefs.getString("latitude", "0") == "" && sharedprefs.getString("longitude", "") == "0")) {
+        if ((sharedprefs.getString("latitude", "").equals("") && sharedprefs.getString("longitude", "").equals("")) || (sharedprefs.getString("latitude", "0").equals("0") && sharedprefs.getString("longitude", "").equals("0"))) {
             Intent i = new Intent(MainActivity.this, LocationTracker.class);
             startActivity(i);
 
         } else {
-            Toast.makeText(MainActivity.this, "LOOOOOOOOOOOL", Toast.LENGTH_SHORT).show();
             lat = Double.parseDouble(sharedprefs.getString("latitude", ""));
             lon = Double.parseDouble(sharedprefs.getString("longitude", ""));
         }
