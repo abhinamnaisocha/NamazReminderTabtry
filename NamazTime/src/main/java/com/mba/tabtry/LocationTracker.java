@@ -102,7 +102,7 @@ public class LocationTracker extends Activity implements LocationListener {
                     lon = location.getLongitude();
                     alt = location.getAltitude();
                     late.setText("Latitude: " + String.valueOf(location.getLatitude()));
-                    longi.setText("Longitude:" + String.valueOf(location.getLongitude()));
+                    longi.setText("Longitude:" + String.valueOf(location.getAltitude()));
                     editor.putString("latitude", "" + lat);
                     editor.putString("longitude", "" + lon);
                     editor.putString("altitude", "" + alt);

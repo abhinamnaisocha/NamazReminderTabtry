@@ -32,7 +32,7 @@ import android.widget.Toast;
 public class QiblaDirectionFragment extends Fragment implements SensorEventListener {
 
 
-    Location currentLocation, MeccaLocation;
+    Location currentLocation = new Location(""), MeccaLocation = new Location("");
     private ImageView image, arrowIv;
     private float currentDegree = 0f;
     double arrowStarting;
@@ -60,9 +60,7 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
         sharedprefs = getActivity().getSharedPreferences("dirPref", 0);
 
         getLocation();
-        currentLocation.setLatitude(latitude);
-        currentLocation.setLongitude(longitude);
-        currentLocation.setAltitude(altitude);
+
 
         MeccaLocation.setLatitude(21.427378);
         MeccaLocation.setLongitude(39.814838);
@@ -168,7 +166,7 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
 
             latitude = Double.parseDouble(sharedprefs.getString("latitude", "0"));
             longitude = Double.parseDouble(sharedprefs.getString("longitude", "0"));
-            longitude = Double.parseDouble(sharedprefs.getString("altitude", "0"));
+            altitude = Double.parseDouble(sharedprefs.getString("altitude", "0"));
             Toast.makeText(getContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             // thhese four line to calculate angle from user to Mecca.
             double lonDelta = (longitude * (Math.PI / 180) - 0.695096573227);
@@ -180,10 +178,14 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
             Log.e("====" + bearing + "====",
                     "Your Location is Lat: " + latitude +
                             "\nLong: " + longitude +
+                            "\nAlt: " + altitude +
                             "\n lat: " + latitude * (Math.PI / 180) +
                             "\nlog: " + longitude * (Math.PI / 180) +
                             "\n lat: " + sharedprefs.getString("latitude", "") + "" +
                             " \nlog: " + sharedprefs.getString("longitude", ""));
+            currentLocation.setLatitude(latitude);
+            currentLocation.setLongitude(longitude);
+            currentLocation.setAltitude(altitude);
         } else {
             Toast.makeText(getContext(), "If your location has changed press get location button", Toast.LENGTH_LONG).show();
 
