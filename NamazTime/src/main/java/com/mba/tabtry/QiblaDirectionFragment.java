@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,10 +19,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -84,44 +90,17 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
     @Override
     public void onSensorChanged(SensorEvent event) {
         float degree = Math.round(event.values[0]);
-        GeomagneticField geoField = new GeomagneticField(Double
-                .valueOf(latitude).floatValue(), Double
-                .valueOf(longitude).floatValue(),
-                Double.valueOf(altitude).floatValue(),
-                System.currentTimeMillis());
 
-
-        degree -= geoField.getDeclination();
         tvHeading.setText(Float.toString(degree));
 
 
-        float bearTo = currentLocation.bearingTo(MeccaLocation);
-
-        if (bearTo < 0) {
-            bearTo = bearTo + 360;
-        }
-        float direction = bearTo - degree;
-        if (direction < 0) {
-            direction = direction + 360;
-        }
         // create a rotation animation (reverse turn degree degrees)
 
         RotateAnimation ra = new RotateAnimation(
 
                 currentDegree,
 
-                direction,
-
-                Animation.RELATIVE_TO_SELF, 0.5f,
-
-                Animation.RELATIVE_TO_SELF,
-
-                0.5f);
-        RotateAnimation raArrow = new RotateAnimation(
-
-                (float) arrowStarting,
-
-                direction,
+                -degree,
 
                 Animation.RELATIVE_TO_SELF, 0.5f,
 
@@ -129,17 +108,69 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
 
                 0.5f);
 
+        // If we don't have a Location, we break out
 
-        ra.setDuration(210);
 
-        ra.setFillAfter(true);
+        float azimuth = event.values[0];
+        float baseAzimuth = azimuth;
 
-        image.startAnimation(ra);
-        arrowIv.startAnimation(raArrow);
+        GeomagneticField geoField = new GeomagneticField(Double
+                .valueOf(currentLocation.getLatitude()).floatValue(), Double
+                .valueOf(currentLocation.getLongitude()).floatValue(),
+                Double.valueOf(currentLocation.getAltitude()).floatValue(),
+                System.currentTimeMillis());
 
-        currentDegree = direction;
-        arrowStarting = direction;
+        azimuth -= geoField.getDeclination(); // converts magnetic north into true north
+
+        // Store the bearingTo in the bearTo variable
+        float bearTo = currentLocation.bearingTo(MeccaLocation);
+
+        // If the bearTo is smaller than 0, add 360 to get the rotation clockwise.
+        if (bearTo < 0) {
+            bearTo = bearTo + 360;
+        }
+
+        //This is where we choose to point it
+        float direction = bearTo - azimuth;
+
+        // If the direction is smaller than 0, add 360 to get the rotation clockwise.
+        if (direction < 0) {
+            direction = direction + 360;
+        }
+
+        rotateImageView(arrowIv, R.drawable.arroww, direction);
     }
+
+    private void rotateImageView(ImageView imageView, int drawable, float rotate) {
+
+        // Decode the drawable into a bitmap
+        Bitmap bitmapOrg = BitmapFactory.decodeResource(getResources(),
+                drawable);
+
+        // Get the width/height of the drawable
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) this.getActivity().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        int width = bitmapOrg.getWidth(), height = bitmapOrg.getHeight();
+
+        // Initialize a new Matrix
+        Matrix matrix = new Matrix();
+
+        // Decide on how much to rotate
+        rotate = rotate % 360;
+
+        // Actually rotate the image
+        matrix.postRotate(rotate, width, height);
+
+        // recreate the new Bitmap via a couple conditions
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+        //BitmapDrawable bmd = new BitmapDrawable( rotatedBitmap );
+
+        //imageView.setImageBitmap( rotatedBitmap );
+        imageView.setImageDrawable(new BitmapDrawable(getResources(), rotatedBitmap));
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
+    }
+
 
     @Override
     public void onPause() {
@@ -169,10 +200,11 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
             altitude = Double.parseDouble(sharedprefs.getString("altitude", "0"));
             Toast.makeText(getContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             // thhese four line to calculate angle from user to Mecca.
-            double lonDelta = (longitude * (Math.PI / 180) - 0.695096573227);
-            double y = Math.sin(lonDelta) * Math.cos(latitude * (Math.PI / 180));
-            double x = Math.cos(0.373893159) * Math.sin(latitude * (Math.PI / 180)) - Math.sin(0.373893159) * Math.cos(latitude * (Math.PI / 180)) * Math.cos(lonDelta);
-            double bearing = Math.toDegrees(Math.atan2(y, x));
+            float lonDelta = (float) (longitude - 39.814838);
+            float y = (float) (Math.sin(lonDelta) * Math.cos(21.427378));
+            float x = (float) (Math.cos(latitude) * Math.sin(21.427378) - Math.sin(latitude) * Math.cos(21.427378) * Math.cos(lonDelta));
+            float bearing = (float) Math.toDegrees(Math.atan2(y, x));
+            ;
             arrowStarting = bearing;
 
             Log.e("====" + bearing + "====",
@@ -181,8 +213,8 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
                             "\nAlt: " + altitude +
                             "\n lat: " + latitude * (Math.PI / 180) +
                             "\nlog: " + longitude * (Math.PI / 180) +
-                            "\n lat: " + sharedprefs.getString("latitude", "") + "" +
-                            " \nlog: " + sharedprefs.getString("longitude", ""));
+                            "\n lat: " + sharedprefs.getString("latitude", "0") + "" +
+                            " \nlog: " + sharedprefs.getString("longitude", "0"));
             currentLocation.setLatitude(latitude);
             currentLocation.setLongitude(longitude);
             currentLocation.setAltitude(altitude);
