@@ -49,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(com.mba.tabtry.R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Namaz"));
-        tabLayout.addTab(tabLayout.newTab().setText("Qibla"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
 
         final ViewPager viewPager = (ViewPager) findViewById(com.mba.tabtry.R.id.pager);

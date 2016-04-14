@@ -198,7 +198,6 @@ public class QiblaDirectionFragment extends Fragment implements SensorEventListe
             latitude = Double.parseDouble(sharedprefs.getString("latitude", "0"));
             longitude = Double.parseDouble(sharedprefs.getString("longitude", "0"));
             altitude = Double.parseDouble(sharedprefs.getString("altitude", "0"));
-            Toast.makeText(getContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             // thhese four line to calculate angle from user to Mecca.
             float lonDelta = (float) (longitude - 39.814838);
             float y = (float) (Math.sin(lonDelta) * Math.cos(21.427378));
