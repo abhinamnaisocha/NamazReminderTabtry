@@ -29,9 +29,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * Created by Muhammad Bilal on 26/02/2016.
- */
 public class LocationTracker extends Activity implements LocationListener {
 
     String provider;
@@ -42,6 +39,35 @@ public class LocationTracker extends Activity implements LocationListener {
     SharedPreferences sharedprefs;
     SharedPreferences.Editor editor;
     Location location;
+     ProgressDialog dial,dialog;
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Exit Application?");
+        alertDialogBuilder
+                .setMessage("Click yes to exit!")
+                .setCancelable(false)
+                .setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                moveTaskToBack(true);
+                                android.os.Process.killProcess(android.os.Process.myPid());
+                                System.exit(1);
+                            }
+                        })
+
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +77,7 @@ public class LocationTracker extends Activity implements LocationListener {
         refreshBnt = (Button) findViewById(R.id.Location);
         late = (TextView) findViewById(R.id.latitude);
         longi = (TextView) findViewById(R.id.longitude);
-        final ProgressDialog dialog = ProgressDialog.show(LocationTracker.this,
+         dialog = ProgressDialog.show(LocationTracker.this,
                 "Please Wait... ", "Getting Location... ", false, true);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         new CountDownTimer(5000, 5000) {
@@ -117,7 +143,7 @@ public class LocationTracker extends Activity implements LocationListener {
                 showSettingsAlert();
 
 
-            final ProgressDialog dial = ProgressDialog.show(LocationTracker.this,
+            dial = ProgressDialog.show(LocationTracker.this,
                     "Please Wait... ", "Getting Location... ", false, true);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
@@ -157,6 +183,11 @@ public class LocationTracker extends Activity implements LocationListener {
     @Override
     protected void onPause() {
         super.onPause();
+        if (dial != null)
+            dial.dismiss();
+        if (dialog != null)
+            dialog.dismiss();
+
         finish();
     }
 

@@ -20,6 +20,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="188dp"
         android:text="@string/lati"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -31,16 +33,21 @@
         android:layout_below="@+id/latitude"
         android:layout_marginTop="10dp"
         android:text="@string/longi"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
         android:id="@+id/Location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:layout_width="120dp"
+        android:layout_height="51dp"
+        android:background="@drawable/buttonshape"
+        android:text="@string/okie"
         android:layout_below="@+id/longitude"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp"
-        android:text="@string/okie" />
+        android:layout_marginTop="109dp" />
 
 
 </RelativeLayout>
